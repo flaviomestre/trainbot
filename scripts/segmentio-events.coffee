@@ -16,6 +16,7 @@
 module.exports = (robot) ->
   robot.router.post '/hubot/segmentio-events', (req, res) ->
     data = req.body
-    robot.emit 'event', data
+    if data and data.action == 'Track'
+      robot.emit 'event', data
     res.writeHead 200, {'Content-Type': 'text/plain'}
     res.end 'OK\n'
