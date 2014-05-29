@@ -18,16 +18,9 @@ module.exports = (robot) ->
     rooms = process.env.HUBOT_TRAINERSVAULT_NOTIFICATION_ROOMS.split(",")
 
   robot.on 'event', (data) ->
-    console.log("Rooms")
-    console.log(rooms)
-    robot.messageRoom('81422_trainersvault@conf.hipchat.com', "Received event #{data.event}")
-    if rooms and rooms.length > 0
-      for room in rooms
-        robot.messageRoom(room, "Received event #{data.event}")
     if new RegExp(/Paid for order/i).test(data.event)
       orderTotal = data.properties.orderTotal
       message = "KACHING!!! New order of: #{orderTotal}"
-      console.log(message)
       if rooms and rooms.length > 0
         for room in rooms
           robot.messageRoom(room, message)
