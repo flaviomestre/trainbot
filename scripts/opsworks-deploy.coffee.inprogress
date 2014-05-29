@@ -1,0 +1,161 @@
+# Description:
+#   Opsworks Deployments for Hubot
+#
+# Dependencies:
+#   aws-sdk
+#
+# Configuration:
+#   AWS_KEY: Amazon Web Services access key
+#   AWS_SECRET: Amazon Web Services secret token
+#
+# Commands:
+#   hubot deploy list - Lists all deployable applications
+#   hubot deploy list stacks - Lists all available stacks
+#   hubot deploy <app> <message> - Triggers a production deployment of *app* with *message*
+#   hubot deploy <app> with migrations <message> - Triggers a production deployment with migrations of *app* with *message*
+#   hubot deploy <app> on <environment> <message> - Triggers a deployment of *app* on *environment* with *message*
+#   hubot deploy <app> on <environment> with migrations <message> - Triggers a deployment with migrations of *app* on *environment* with *message*
+#
+# Author:
+#   donaldpiret
+
+#https = require 'https'
+#AWS = require 'aws-sdk'
+#aws_key = process.env.AWS_KEY
+#aws_secret = process.env.AWS_SECRET
+#AWS.config.update(accessKeyId: aws_key, secretAccessKey: aws_secret, region: 'us-east-1')
+#
+#opsworks = new AWS.OpsWorks(apiVersion: '2013-02-18')
+#
+#
+#apps =
+#  roomorama:
+#    production:
+#      id: "c573a608-c25d-43d1-a7d1-1c89b6b27076"
+#      stack: "9d368961-4345-4f68-b9be-1aea7ac45d2c"
+#    staging:
+#      id: "190925d6-af54-4055-8065-ac455f73ef92"
+#      stack: "7bfa70ae-e8fb-4a8a-9521-f249f1cefc01"
+#  phonorama:
+#  production:
+#    id: "882c5e22-33bf-4259-b1bf-41246a4b9052"
+#    stack: "4d17c082-735c-4554-a392-32627b42fbda"
+#    staging:
+#      id: "963ef5f3-4763-4066-b26b-8577fa982b56"
+#      stack: "07283f3c-cdb2-407c-be0d-5bcec6e7291c"
+#  feeds:
+#    production:
+#      id: "7fa15ecc-635f-4027-8750-2f79f851f74d"
+#      stack: "c16c3bf4-b1ea-4baf-ad9a-bd9cfa444e6e"
+#  team:
+#    production:
+#      id: "d8e54b52-cf91-4857-aa4a-9a71596b8a73"
+#      stack: "35a0df7a-f1d3-40d9-98cb-19ffc739860b"
+#
+#class OpsWorksClient
+#  constructor: (@https, @aws) ->
+#    this.client = new AWS.OpsWorks()
+#    @stacks_cache = []
+#    @apps_cache = []
+#
+#  getStacks: (params, cb) ->
+#    if @stacks_cache.length
+#      cb(null, @stacks_cache)
+#    else
+#      request = this.client.describeStacks params, (err, data) ->
+#        @stacks_cache = data unless err
+#        cb(err, @stacks_cache)
+#
+#  deploy: (appId, appStack, withMigrations, msg, cb, finishedCb) ->
+#    that = this
+#    this.getInstanceIds appStack, (instanceIds) ->
+#      console.log "StackId: #{appStack}, AppId: #{appId}, InstanceIds: #{instanceIds}, Comment: #{msg}, Command: Args: Migrate: #{withMigrations}"
+#      request = that.client.createDeployment {StackId: appStack, AppId: appId, InstanceIds: instanceIds, Comment: msg, Command: {Name: 'deploy', Args: {'migrate': ["#{withMigrations}"]}}}, (err, data) ->
+#        that.registerRunningDeploy(appId, appStack, data, finishedCb) unless err
+#        cb(err, data);
+#
+#  getInstanceIds: (appStack, cb) ->
+#    that = this
+#    request = this.client.describeInstances {StackId: appStack}, (err, data) ->
+#      unless err
+#        console.log "Got instance id's #{data["Instances"]}"
+#        cb (instance["InstanceId"] for instance in data["Instances"])
+#      else
+#        console.log "Err #{err}, could not get instance id's"
+#
+#  registerRunningDeploy: (appId, appStack, deploy, cb) ->
+#    console.log "Registering running deploy: #{deploy}"
+#    that = this
+#    intervalId = setInterval () ->
+#      that.client.describeDeployments {DeploymentIds: [deploy["DeploymentId"]]}, (err, data) ->
+#        unless err
+#          console.log "Got deployment data: #{data}"
+#          deploy = data["Deployments"][0]
+#          console.log "Deploy status: #{deploy["Status"]}"
+#          if deploy["Status"] isnt 'running'
+#            console.log "Deploy isn't running anymore, sending callback"
+#            clearInterval intervalId
+#            cb deploy
+#        else
+#          console.log "Err #{err}, clearing intervalid"
+#          clearInterval intervalId
+#    , 10000
+#
+#client = new OpsWorksClient https, AWS
+#
+#module.exports = (robot)->
+#  robot.respond /deploy list stacks$/i, (message)->
+#    client.getStacks {}, (err, data) ->
+#      unless err
+#        message.send stack["Name"] for stack in data["Stacks"]
+#      else
+#        message.send "Could not get stacks: #{JSON.stringify(err)}"
+#
+#  robot.respond /deploy list( apps)?$/i, (message)->
+#    for key, value of apps
+#      message.send "#{key}"
+#
+#  robot.respond /deploy (?!list)([0-9a-z]+)( (on|to) ([0-9a-z]+))?( with migrations)?( (.+))?$/i, (message)->
+#    appName = message.match[1]
+#    deployEnvironment = message.match[4] || 'production'
+#    withMigrations = message.match[5] == ' with migrations'
+#    deployMessage = message.match[6] || ''
+#    [appId, appStack] = [apps[appName][deployEnvironment]['id'], apps[appName][deployEnvironment]['stack']]
+#    if appId && appStack
+#      notice = "Deploying #{appName} on #{deployEnvironment}"
+#      notice += " with migrations" if withMigrations
+#      notice += ". Will drop a note when it's done."
+#      console.log "Deploying #{appName} (#{appId}) on #{deployEnvironment} (#{appStack})"
+#      client.deploy appId, appStack, withMigrations, deployMessage, (err, data) ->
+#        unless err
+#          message.send notice
+#        else
+#          message.send "Error deploying: #{JSON.stringify(err)}"
+#      , (finished) ->
+#        console.log "Deploy finished, status: #{finished["Status"]}"
+#        success = (finished["Status"] == 'successful')
+#        if success
+#          notice = 'Success! '
+#        else
+#          notice = "FAIL! FAIL! FAIL! "
+#        console.log notice
+#        notice += "Your deployment of #{appName} on #{deployEnvironment}"
+#        notice += " with migrations" if withMigrations
+#        notice += ": '#{finished["Comment"]}'" if finished["Comment"]
+#        console.log notice
+#        if success
+#          notice += " is done!."
+#        else
+#          notice += " has failed."
+#        console.log notice
+#        notice += " (https://console.aws.amazon.com/opsworks/home?#/stack/#{appStack}/deployments/#{finished["DeploymentId"]})"
+#        console.log notice
+#        message.send notice
+#        console.log "Done!"
+#    else
+#      unless apps[appName]
+#        message.send "Unknown app: #{appName}"
+#      else
+#        message.send "Unknown environment #{deployEnvironment} for app #{appName}. Known environments:"
+#        for environment in apps[appName]
+#          message.send environment unless environment == "id" or environment == "stack"
