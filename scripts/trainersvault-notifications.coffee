@@ -18,7 +18,7 @@ module.exports = (robot) ->
     rooms = process.env.HUBOT_TRAINERSVAULT_NOTIFICATION_ROOMS.split(",")
 
   robot.on 'event', (data) ->
-    console.log(data)
+    #console.log(data)
     if new RegExp(/Payment collected for order/i).test(data.event)
       #console.log(data.properties)
       orderId = data.properties.orderId
