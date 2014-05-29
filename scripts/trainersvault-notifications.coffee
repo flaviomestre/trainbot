@@ -5,7 +5,7 @@
 #   None
 #
 # Configuration:
-#   HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOM - A comma separate list of rooms to send notifications to
+#   HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOMS - A comma separate list of rooms to send notifications to
 #
 # Commands:
 #   None
@@ -14,8 +14,8 @@
 #   donaldpiret
 
 module.exports = (robot) ->
-  if process.env.HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOM
-    rooms = process.env.HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOM.split(",")
+  if process.env.HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOMS
+    rooms = process.env.HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOMS.split(",")
 
   robot.on 'event', (data) ->
     console.log(data.event)
