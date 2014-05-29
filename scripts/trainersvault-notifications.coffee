@@ -23,6 +23,6 @@ module.exports = (robot) ->
       orderTotal = data.properties.orderTotal
       message = "KACHING!!! New order of: #{orderTotal}"
       console.log(message)
-      if rooms.length > 0
+      if rooms and rooms.length > 0
         for room in rooms
           robot.messageRoom(room, message)
