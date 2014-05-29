@@ -18,7 +18,10 @@ module.exports = (robot) ->
     rooms = process.env.HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOMS.split(",")
 
   robot.on 'event', (data) ->
-    console.log(data)
+    console.log(rooms)
+    if rooms and rooms.length > 0
+      for room in rooms
+        robot.messageRoom(room, "Received event #{data.event}")
     if new RegExp(/Paid for order/i).test(data.event)
       orderTotal = data.properties.orderTotal
       message = "KACHING!!! New order of: #{orderTotal}"
