@@ -23,7 +23,8 @@ module.exports = (robot) ->
       console.log(data.properties)
       orderId = data.properties.orderId
       revenue = data.properties.revenue
-      message = "KACHING!!! Payment collected for order ##{orderId}: #{revenue}$"
+      trainer = data.properties.trainer
+      message = "KACHING!!! Payment collected for order ##{orderId}: #{revenue}$ trainer: #{trainer}"
       if rooms and rooms.length > 0
         for room in rooms
           robot.messageRoom(room, message)
