@@ -5,7 +5,7 @@
 #   None
 #
 # Configuration:
-#   HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOMS - A comma separate list of rooms to send notifications to
+#   HUBOT_TRAINERSVAULT_NOTIFICATIONS_ROOMS - A comma separate list of rooms to send notifications to
 #
 # Commands:
 #   None
@@ -14,11 +14,13 @@
 #   donaldpiret
 
 module.exports = (robot) ->
-  if process.env.HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOMS
-    rooms = process.env.HUBOT_TRAINERVAULT_NOTIFICATIONS_ROOMS.split(",")
+  if process.env.HUBOT_TRAINERSVAULT_NOTIFICATION_ROOMS
+    rooms = process.env.HUBOT_TRAINERSVAULT_NOTIFICATION_ROOMS.split(",")
 
   robot.on 'event', (data) ->
+    console.log("Rooms")
     console.log(rooms)
+    robot.messageRoom('81422_trainersvault@conf.hipchat.com', "Received event #{data.event}")
     if rooms and rooms.length > 0
       for room in rooms
         robot.messageRoom(room, "Received event #{data.event}")
