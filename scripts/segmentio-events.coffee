@@ -15,6 +15,8 @@
 
 module.exports = (robot) ->
   robot.router.post '/hubot/segmentio-events', (req, res) ->
+    console.log("Received post")
+    console.log(res.body.payload)
     data   = JSON.parse req.body.payload
     console.log("Received event:")
     console.log(data)
