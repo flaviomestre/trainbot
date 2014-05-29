@@ -20,7 +20,7 @@ module.exports = (robot) ->
   robot.on 'event', (data) ->
     console.log(data)
     if new RegExp(/Payment collected for order/i).test(data.event)
-      console.log(data.properties)
+      #console.log(data.properties)
       orderId = data.properties.orderId
       revenue = data.properties.revenue
       trainer = data.properties.trainer
