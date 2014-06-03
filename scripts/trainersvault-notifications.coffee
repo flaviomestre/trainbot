@@ -25,7 +25,7 @@ module.exports = (robot) ->
       revenue = data.properties.revenue
       trainer = data.properties.trainer
       user = data.properties.userName
-      message = "KACHING!!! #{user} booked #{trainer}: #{revenue}$ (Order ##{orderId}) https://trainersvault.com/admin/orders/#{orderId}"
+      message = "KACHING!!! #{user} booked #{trainer}: $#{revenue} (Order ##{orderId})"
       if rooms and rooms.length > 0
         for room in rooms
           robot.messageRoom(room, message)
