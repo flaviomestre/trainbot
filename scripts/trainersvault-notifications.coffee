@@ -24,14 +24,16 @@ module.exports = (robot) ->
       orderId = data.properties.orderId
       revenue = data.properties.revenue
       trainer = data.properties.trainer
-      message = "KACHING!!! Payment collected for order ##{orderId}: #{revenue}$ trainer: #{trainer}"
+      user = data.properties.userName
+      message = "KACHING!!! #{user} booked #{trainer}: #{revenue}$ (Order ##{orderId}) https://trainersvault.com/admin/orders/#{orderId}"
       if rooms and rooms.length > 0
         for room in rooms
           robot.messageRoom(room, message)
     if new RegExp(/Account activated/i).test(data.event)
       userId = data.properties.id
+      userName = data.properties.name
       userEmail = data.properties.email
-      message = "New user signup: #{userId}"
+      message = "New user #{userName} (#{userEmail})"
       if rooms and rooms.length > 0
         for room in rooms
           robot.messageRoom(room, message)
