@@ -31,7 +31,7 @@ module.exports = (robot) ->
           robot.messageRoom(room, message)
     if new RegExp(/Account activated/i).test(data.event)
       userId = data.properties.id
-      userName = data.properties.name
+      userName = "#{data.properties.firstName} #{data.properties.lastName}"
       userEmail = data.properties.email
       message = "New user #{userName} (#{userEmail})"
       if rooms and rooms.length > 0
